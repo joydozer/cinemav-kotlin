@@ -6,12 +6,12 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.jackandphantom.carouselrecyclerview.CarouselRecyclerview
 import com.synnapps.carouselview.CarouselView
+import com.synnapps.carouselview.ImageClickListener
 import com.synnapps.carouselview.ImageListener
 import okhttp3.Interceptor
 import okhttp3.Interceptor.*
@@ -21,14 +21,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import retrofit2.http.GET
 
-
-//https://www.youtube.com/watch?v=sKRLCwGTHu8
-//https://www.youtube.com/watch?v=I3sfnblByiY
-//https://www.youtube.com/watch?v=sRLunCZX2Uc
-//https://www.youtube.com/watch?v=6CgkDGIzUC0
 
 const val BaseURLDiscover = "https://api.themoviedb.org/3/discover/"
 const val TAGDiscover:String = "CHECK_RESPONSE"
@@ -46,9 +40,9 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
         setContentView(R.layout.activity_main)
 
-        val carouselView = findViewById(R.id.carouselView) as CarouselView
-
-        //getDiscover()
+        val carouselView = findViewById<CarouselView>(R.id.carouselView)
+        val carouselViewTopMovie = findViewById<CarouselView>(R.id.carouselView2)
+        val carouselViewPopMovie = findViewById<CarouselView>(R.id.carouselView3)
 
         var client: OkHttpClient? = OkHttpClient.Builder().addInterceptor(Interceptor { chain ->
             val newRequest = chain.request().newBuilder()
@@ -70,31 +64,130 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if(response.isSuccessful){
                     response.body()?.let {
+                        var posterImages = arrayOf("")
+                        var idMovieDisc = arrayOf("")
+                        for(movies in it.results!!) {
+                            val url = "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + movies?.posterPath
+                            posterImages += url
+                            idMovieDisc += movies?.id.toString()
+                        }
                         val imageListener: ImageListener = object : ImageListener {
                             override fun setImageForPosition(position: Int, imageView: ImageView) {
-                                Glide.with(this@MainActivity)
-                                        .load("https://image.tmdb.org/t/p/w600_and_h900_bestv2/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg")
+                                Glide.with(carouselView)
+                                        .load(posterImages[position+1])
                                         .into(imageView)
                             }
                         }
 
-                        //carouselView.setPageCount(it.results!!.size)
-                        //carouselView.setImageListener(imageListener)
+                        carouselView.setImageListener(imageListener)
+                        carouselView.pageCount = 7
+                        carouselView.setImageClickListener(ImageClickListener { position ->
+                            val intent = Intent(this@MainActivity, MoviePage::class.java)
+                            intent.putExtra("id", idMovieDisc[position+1])
+                            intent.putExtra("url_poster", posterImages[position+1])
+                            startActivity(intent)
+                        })
 
-                        for(movies in it.results!!) {
-                            //Log.i(TAGDiscover, "onResponse ${movies?.title}")
-                            /*val url = "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + movies?.posterPath
-                            )
-                            val posterImage = intArrayOf(
-                                Glide.with()
-                                    .load(url),*/
-                        }
                     }
                 }
             }
 
             override fun onFailure(call: Call<ResponseDiscoverMovie>, t: Throwable) {
                 Log.i(TAGDiscover, "onFailure: ${t.message}")
+            }
+
+        })
+
+        val apiTopRated =  Retrofit.Builder()
+            .client(client)
+            .baseUrl(BaseURLTop)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiServiceTop::class.java)
+        apiTopRated.getTopMovie().enqueue(object: Callback<ResponseTopRated> {
+            override fun onResponse(
+                call: Call<ResponseTopRated>,
+                response: Response<ResponseTopRated>
+            ) {
+                if(response.isSuccessful){
+                    response.body()?.let {
+                        var posterImages = arrayOf("")
+                        var idMovieDisc = arrayOf("")
+                        for(movies in it.results!!) {
+                            val url = "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + movies?.posterPath
+                            posterImages += url
+                            idMovieDisc += movies?.id.toString()
+                        }
+                        val imageListener2: ImageListener = object : ImageListener {
+                            override fun setImageForPosition(position: Int, imageView: ImageView) {
+                                Glide.with(carouselView)
+                                    .load(posterImages[position+1])
+                                    .into(imageView)
+                            }
+                        }
+
+                        carouselViewTopMovie.setImageListener(imageListener2)
+                        carouselViewTopMovie.setPageCount(5)
+                        carouselViewTopMovie.setImageClickListener(ImageClickListener { position ->
+                            val intent = Intent(this@MainActivity, MoviePage::class.java)
+                            intent.putExtra("id", idMovieDisc[position+1])
+                            intent.putExtra("url_poster", posterImages[position+1])
+                            startActivity(intent)
+                        })
+
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseTopRated>, t: Throwable) {
+                Log.i(TAGPopular, "onFailure: ${t.message}")
+            }
+
+        })
+
+        val apiPopMovie =  Retrofit.Builder()
+            .client(client)
+            .baseUrl(BaseURLPopular)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiServicePopular::class.java)
+        apiPopMovie.getPopularMovie().enqueue(object: Callback<ResponsePopularMovie> {
+            override fun onResponse(
+                call: Call<ResponsePopularMovie>,
+                response: Response<ResponsePopularMovie>
+            ) {
+                if(response.isSuccessful){
+                    response.body()?.let {
+                        var posterImages = arrayOf("")
+                        var idMovieDisc = arrayOf("")
+                        for(movies in it.results!!) {
+                            val url = "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + movies?.posterPath
+                            posterImages += url
+                            idMovieDisc += movies?.id.toString()
+                        }
+                        val imageListener3: ImageListener = object : ImageListener {
+                            override fun setImageForPosition(position: Int, imageView: ImageView) {
+                                Glide.with(carouselView)
+                                    .load(posterImages[position+1])
+                                    .into(imageView)
+                            }
+                        }
+
+                        carouselViewPopMovie.setImageListener(imageListener3)
+                        carouselViewPopMovie.setPageCount(5)
+                        carouselViewPopMovie.setImageClickListener(ImageClickListener { position ->
+                            val intent = Intent(this@MainActivity, MoviePage::class.java)
+                            intent.putExtra("id", idMovieDisc[position+1])
+                            intent.putExtra("url_poster", posterImages[position+1])
+                            startActivity(intent)
+                        })
+
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ResponsePopularMovie>, t: Throwable) {
+                Log.i(TAGPopular, "onFailure: ${t.message}")
             }
 
         })
@@ -118,41 +211,4 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
-    /*
-
-    var client: OkHttpClient? = OkHttpClient.Builder().addInterceptor(Interceptor { chain ->
-        val newRequest = chain.request().newBuilder()
-            .addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MjRhOWE0OTg4M2Q1OWQwYmU3ZDMzZDU2NjMyMjA5NCIsInN1YiI6IjY1NWNhZTZjN2YwNTQwMThkNmY1ZDU3MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.004GXmbO1lAItGyxHlM69sXYlF473lVwyLBOnvKJca8")
-            .build()
-        chain.proceed(newRequest)
-    }).build()
-
-    fun getDiscover() {
-        val api =  Retrofit.Builder()
-            .client(client)
-            .baseUrl(BaseURLDiscover)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiServiceDiscover::class.java)
-        api.getDiscoverMovie().enqueue(object: Callback<ResponseDiscoverMovie>{
-            override fun onResponse(
-                call: Call<ResponseDiscoverMovie>,
-                response: Response<ResponseDiscoverMovie>
-            ) {
-                if(response.isSuccessful){
-                    response.body()?.let {
-                        for(movies in it.results!!) {
-                            //Log.i(TAGDiscover, "onResponse ${movies?.title}")
-                        }
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseDiscoverMovie>, t: Throwable) {
-                Log.i(TAGDiscover, "onFailure: ${t.message}")
-            }
-
-        })
-    }*/
 }

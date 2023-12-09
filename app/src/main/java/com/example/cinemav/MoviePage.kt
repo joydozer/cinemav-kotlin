@@ -34,10 +34,12 @@ class MoviePage : AppCompatActivity() {
         val idMovie = intent.getStringExtra("id")
         val posterPath = intent.getStringExtra("url_poster")
         val movieTitle = findViewById<TextView>(R.id.textView4)
+        val genreMovie = findViewById<TextView>(R.id.genre_movie)
         val moviePoster = findViewById<ImageView>(R.id.poster_movie_page)
         val durationMovie = findViewById<TextView>(R.id.duration_movie)
         val releaseDate = findViewById<TextView>(R.id.release_date_movie)
         val overviewMovie = findViewById<TextView>(R.id.overview_movie_text)
+        val ratingMovie = findViewById<TextView>(R.id.ratingMovie)
 
         var client: OkHttpClient? = OkHttpClient.Builder().addInterceptor(Interceptor { chain ->
             val newRequest = chain.request().newBuilder()
@@ -67,6 +69,10 @@ class MoviePage : AppCompatActivity() {
                     durationMovie.text = newtime
                     releaseDate.text = response.body()?.releaseDate
                     overviewMovie.text = response.body()?.overview
+                    ratingMovie.text = response.body()?.voteAverage.toString() + "/10"
+                    for (genre in response.body()?.genres!!) {
+                        genreMovie.append(" " + genre?.name)
+                    }
                     Glide.with(moviePoster)
                         .load(posterPath)
                         .error(R.drawable.ic_launcher_background)

@@ -48,12 +48,18 @@
         android:layout_marginTop="250dp"
         android:layout_centerHorizontal="true"
         android:textColor="#FFFFFF"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/ratingMovie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/regularinter"
+        android:textColor="@color/yellow"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/textView4"/>
 
     <TextView
         android:id="@+id/genre_movie_header"
@@ -147,22 +153,11 @@
         android:textColor="@color/gray"
         android:layout_below="@id/overview_movie_text_header"
         android:layout_marginTop="10sp"
+        android:layout_marginBottom="50sp"
         android:layout_marginLeft="20sp"
         android:textSize="12sp"
         android:maxWidth="300sp"
         android:text="" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20sp"
-        android:layout_marginTop="50sp"
-        android:layout_below="@id/overview_movie_text"
-
-        android:fontFamily="@font/semibold"
-        android:text="Cast"
-        android:textColor="@color/white"
-        android:textSize="25sp" />
 
 </RelativeLayout>
 </ScrollView>
