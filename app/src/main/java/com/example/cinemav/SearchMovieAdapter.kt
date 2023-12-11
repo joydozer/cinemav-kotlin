@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class TopMovieAdapter(val context: Context, val dataTopMovie: List<ResultsItemTopRated>): RecyclerView.Adapter<TopMovieAdapter.MyViewRecycler>() {
+class SearchMovieAdapter(val context: Context, val dataSearchMovie: List<ResultsItemSearch>): RecyclerView.Adapter<SearchMovieAdapter.MyViewRecycler>() {
     class MyViewRecycler (view: View): RecyclerView.ViewHolder(view) {
         val posterMovie = view.findViewById<ImageView>(R.id.poster_movie)
         val titleMovie = view.findViewById<TextView>(R.id.title_movie)
@@ -24,17 +25,17 @@ class TopMovieAdapter(val context: Context, val dataTopMovie: List<ResultsItemTo
     }
 
     override fun getItemCount(): Int {
-        if(dataTopMovie != null) {
-            return dataTopMovie.size
+        if(dataSearchMovie != null) {
+            return dataSearchMovie.size
         }
         return 0
     }
 
     override fun onBindViewHolder(holder: MyViewRecycler, position: Int) {
-        holder.titleMovie.text = dataTopMovie?.get(position)?.title
+        holder.titleMovie.text = dataSearchMovie?.get(position)?.title
         holder.genreMovie.text = ""
-        for (i in 0 until dataTopMovie?.get(position)?.genreIds!!.size) {
-            when (dataTopMovie?.get(position)?.genreIds?.get(i)) {
+        for (i in 0 until dataSearchMovie?.get(position)?.genreIds!!.size) {
+            when (dataSearchMovie?.get(position)?.genreIds?.get(i)) {
                 28 -> holder.genreMovie.append("Action ")
                 12 -> holder.genreMovie.append("Adventure ")
                 16 -> holder.genreMovie.append("Animation ")
@@ -59,8 +60,7 @@ class TopMovieAdapter(val context: Context, val dataTopMovie: List<ResultsItemTo
                 }
             }
         }
-
-        val url = "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + dataTopMovie?.get(position)?.posterPath
+        val url = "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + dataSearchMovie?.get(position)?.posterPath
 
         Glide.with(holder.posterMovie)
             .load(url)
@@ -69,7 +69,7 @@ class TopMovieAdapter(val context: Context, val dataTopMovie: List<ResultsItemTo
 
         holder.itemView.setOnClickListener{
             val intent = Intent(context, MoviePage::class.java)
-            intent.putExtra("id", dataTopMovie?.get(position)?.id.toString())
+            intent.putExtra("id", dataSearchMovie?.get(position)?.id.toString())
             intent.putExtra("url_poster", url)
             context.startActivity(intent)
         }

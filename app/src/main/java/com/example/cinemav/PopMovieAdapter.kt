@@ -33,10 +33,33 @@ class PopMovieAdapter(val context: Context, val dataPopMovie: List<ResultsItemPo
 
     override fun onBindViewHolder(holder: MyViewRecycler, position: Int) {
         holder.titleMovie.text = dataPopMovie?.get(position)?.title
-        holder.genreMovie.text = dataPopMovie?.get(position)?.genreIds?.get(0).toString()
-        /*for(genre in dataPopMovie?.get(position)?.genreIds!!) {
-            holder.genreMovie.append(dataPopMovie?.get(position)?.genreIds!![genre!!].toString())
-        }*/
+        holder.genreMovie.text = ""
+        for (i in 0 until dataPopMovie?.get(position)?.genreIds!!.size) {
+            when (dataPopMovie?.get(position)?.genreIds?.get(i)) {
+                28 -> holder.genreMovie.append("Action ")
+                12 -> holder.genreMovie.append("Adventure ")
+                16 -> holder.genreMovie.append("Animation ")
+                35 -> holder.genreMovie.append("Comedy ")
+                80 -> holder.genreMovie.append("Crime ")
+                99 -> holder.genreMovie.append("Documentary ")
+                18 -> holder.genreMovie.append("Drama ")
+                10751 -> holder.genreMovie.append("Family ")
+                14 -> holder.genreMovie.append("Fantasy ")
+                36 -> holder.genreMovie.append("History ")
+                27 -> holder.genreMovie.append("Horror ")
+                10402 -> holder.genreMovie.append("Music ")
+                9648 -> holder.genreMovie.append("Mystery ")
+                10749 -> holder.genreMovie.append("Romance ")
+                878 -> holder.genreMovie.append("Science Fiction ")
+                10770 -> holder.genreMovie.append("TV Movie ")
+                53 -> holder.genreMovie.append("Thriller ")
+                10752 -> holder.genreMovie.append("War ")
+                37 -> holder.genreMovie.append("Western ")
+                else -> {
+                    holder.genreMovie.append("Error")
+                }
+            }
+        }
 
         val url = "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + dataPopMovie?.get(position)?.posterPath
 
