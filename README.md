@@ -2,7 +2,7 @@
 ## By Kelompok 5
 
 Link Video Demo: 
-https://drive.google.com/drive/folders/19WGjw6lCeKk0oH8HKhVp9XrXjjtt_QLW?usp=sharing
+https://drive.google.com/file/d/1BlsKjyEsUyJ5oC4I79ec42iMQHcROO72/view
 
 
 Anggota Kelompok:
